@@ -3,6 +3,7 @@ import App from "@/App";
 import About from "@/pages/About";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Verify from "@/pages/Verify";
 
 import { createBrowserRouter } from "react-router";
 
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     Component: Register,
     path: "/register",
+  },
+  {
+    Component: Verify,
+    path: "/verify",
   },
 ]);
 
