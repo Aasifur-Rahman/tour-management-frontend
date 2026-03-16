@@ -8,6 +8,7 @@ export const axiosInstance = axios.create({
 // Add a request interceptor
 axios.interceptors.request.use(
   function (config) {
+    console.log("Axios", config);
     // Do something before request is sent
     return config;
   },
@@ -22,6 +23,7 @@ axios.interceptors.response.use(
   function onFulfilled(response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
+    console.log("Axios", response);
     return response;
   },
   function onRejected(error) {
