@@ -1,50 +1,74 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { useSendOtpMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dot } from "lucide-react";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
 import z from "zod";
 
 export default function Verify() {
   const location = useLocation();
-  const navigate = useNavigate()
- const [email] = useState(location.state)
- const [confirmed, setConfirmed] = useState(false)
-  const [sendOtp] = useSendOtpMutation()
-  
- 
+  const navigate = useNavigate();
+  const [email] = useState(location.state);
+  const [confirmed, setConfirmed] = useState(false);
+  const [sendOtp] = useSendOtpMutation();
 
   const FormSchema = z.object({
     pin: z.string().min(6, {
-      message: "Your one-time password must be 6 characters."
-    })
-  })
-   const form =  useForm<z.infer<typeof FormSchema>>({
+      message: "Your one-time password must be 6 characters.",
+    }),
+  });
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       pin: "",
+    },
+  });
+
+  const handleConfirm = async () => {
+    const toastId = toast.loading("Sending OTP");
+
+    try {
+      const res = await sendOtp({ email: email }).unwrap();
+
+      if (res.success) {
+        toast.success("OTP Sent", { id: toastId });
+        setConfirmed(true);
+      }
+    } catch (error) {
+      console.log(error);
     }
-   })
-
-
-   const handleConfirm = () => {
-      setConfirmed(true)
-      sendOtp({email: email})
-   }
-
+  };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data)
-  }
-
-  
+    console.log(data);
+  };
 
   //! turned off for developement purpose
   // useEffect(() => {
@@ -55,9 +79,8 @@ export default function Verify() {
 
   return (
     <div className="grid place-content-center h-screen">
-      {
-        confirmed ? 
-       ( <Card>
+      {confirmed ? (
+        <Card>
           <CardHeader>
             <CardTitle className="text-xl">Verify your email address</CardTitle>
             <CardDescription>
@@ -101,12 +124,7 @@ export default function Verify() {
                         </InputOTP>
                       </FormControl>
                       <FormDescription>
-                        <Button
-                          
-                        >
-                          Resent OPT:{" "}
-                        </Button>{" "}
-                      
+                        <Button>Resent OPT: </Button>{" "}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -120,13 +138,13 @@ export default function Verify() {
               Submit
             </Button>
           </CardFooter>
-        </Card>) :
-  (
-     <Card>
+        </Card>
+      ) : (
+        <Card>
           <CardHeader>
             <CardTitle className="text-xl">Verify your email address</CardTitle>
             <CardDescription>
-              We will send you and OTP at <br/> {email}
+              We will send you and OTP at <br /> {email}
             </CardDescription>
           </CardHeader>
           <CardFooter className="flex justify-end">
@@ -135,11 +153,7 @@ export default function Verify() {
             </Button>
           </CardFooter>
         </Card>
-  )
-       
-      }
-      
+      )}
     </div>
-  )
-  
+  );
 }
