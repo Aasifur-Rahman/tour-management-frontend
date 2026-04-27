@@ -29,9 +29,12 @@ export function LoginForm({
     } catch (error) {
       console.log(error);
 
-      if (error.status === 401) {
+      if (error.data.message === "Password does not match") {
+        toast.error("Invalid credentials");
+      }
+      if (error.data.message === "User is not verified") {
         toast.error("Your account is not verified");
-        navigate("/verify", { state: data.email  });
+        navigate("/verify", { state: data.email });
       }
     }
   };
