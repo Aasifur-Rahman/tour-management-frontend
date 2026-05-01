@@ -17,3 +17,13 @@ export interface IVerifyOtp {
   email: string;
   otp: string;
 }
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ILogout {
+  name: string;
+  email: string;
+}

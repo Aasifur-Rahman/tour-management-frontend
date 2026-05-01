@@ -9,25 +9,37 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import config from "@/config";
+import type { ILogin } from "@/types";
 
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
-  const form = useForm();
+  const form = useForm<ILogin>();
   const [login] = useLoginMutation();
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+  const onSubmit: SubmitHandler<ILogin> = async (data) => {
     try {
       const res = await login(data).unwrap();
+      if (!res) {
+        toast.error("Something went wrong");
+        return;
+      }
+
+      if (res && res.success) {
+        toast.success("Logged in successfully");
+        navigate("/");
+      }
+
       console.log(res);
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.log(error);
 
       if (error.data.message === "Password does not match") {
