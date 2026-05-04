@@ -9,22 +9,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import config from "@/config";
-import type { ILogin } from "@/types";
 
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
-  const form = useForm<ILogin>();
+  const form = useForm();
   const [login] = useLoginMutation();
 
-  const onSubmit: SubmitHandler<ILogin> = async (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await login(data).unwrap();
       if (!res) {
