@@ -1,6 +1,6 @@
 import Logo from "@/assets/icons/Logo";
 import TravelLogin from "@/assets/images/nasim-dadfar-CDNjKYOEe3s-unsplash.jpg";
-import { LoginForm } from "@/components/modules/login/LoginForm";
+import { LoginForm } from "@/components/modules/Authentication/LoginForm";
 
 import { Link } from "react-router";
 

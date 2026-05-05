@@ -1,6 +1,6 @@
 import Logo from "@/assets/icons/Logo";
 import TravelRegister from "@/assets/images/ajith-s-iBVN--dJ9qM-unsplash.jpg";
-import { RegisterForm } from "@/components/modules/register/RegisterForm";
+import { RegisterForm } from "@/components/modules/Authentication/RegisterForm";
 
 import { Link } from "react-router";
 
