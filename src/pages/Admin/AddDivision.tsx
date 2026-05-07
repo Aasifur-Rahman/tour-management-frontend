@@ -1,3 +1,7 @@
+
+
 export default function AddDivision() {
-  return <div>AddDivision</div>;
+  return (
+    <div>AddDivision</div>
+  )
 }
