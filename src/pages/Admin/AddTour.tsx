@@ -40,6 +40,7 @@ import {
   useAddTourMutation,
   useGetTourTypesQuery,
 } from "@/redux/features/Tour/tour.api";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO } from "date-fns";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -50,12 +51,30 @@ import {
   type FieldValues,
   type SubmitHandler,
 } from "react-hook-form";
+import z from "zod";
+
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  location: z.string().min(1, "Location is required"),
+  costFrom: z.string().min(1, "Cost is required"),
+  startDate: z.date({ message: "Start date is required" }),
+  endDate: z.date({ message: "End date is required" }),
+  departureLocation: z.string().min(1, "Departure location is required"),
+  arrivalLocation: z.string().min(1, "Arrival location is required"),
+  included: z.array(z.object({ value: z.string() })),
+  excluded: z.array(z.object({ value: z.string() })),
+  amenities: z.array(z.object({ value: z.string() })),
+  tourPlan: z.array(z.object({ value: z.string() })),
+  maxGuest: z.string().min(1, "Max guest is required"),
+  minAge: z.string().min(1, "Minimum age is required"),
+  division: z.string().min(1, "Division is required"),
+  tourType: z.string().min(1, "Tour type is required"),
+});
 
 export default function AddTour() {
   const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
   const [addTour] = useAddTourMutation();
-
-  console.log(images);
 
   const { data: tourTypeData, isLoading: tourTypeLoading } =
     useGetTourTypesQuery(undefined);
@@ -76,22 +95,58 @@ export default function AddTour() {
     }),
   );
 
-  const form = useForm({
+  const now = new Date();
+
+  const threeDaysLater = new Date(now);
+  threeDaysLater.setDate(now.getDate() + 3);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      title: "Cox's Bazar Beach Adventure",
+      description:
+        "Experience the world's longest natural sea beach with golden sandy shores, crystal clear waters, and breathtaking sunsets. Enjoy beach activities, local seafood, and explore nearby attractions including Himchari National Park and Inani Beach.",
+      location: "Cox's Bazar",
+      costFrom: "15000",
+      startDate: new Date(),
+
+      endDate: threeDaysLater, // 3 days later
+      departureLocation: "Dhaka",
+      arrivalLocation: "Cox's Bazar",
+      included: [
+        { value: "Accommodation for 2 nights" },
+        { value: "All meals (breakfast, lunch, dinner)" },
+        { value: "Transportation (AC bus)" },
+        { value: "Professional tour guide" },
+      ],
+      excluded: [
+        { value: "Personal expenses" },
+        { value: "Extra activities not mentioned" },
+        { value: "Travel insurance" },
+      ],
+      amenities: [
+        { value: "Air-conditioned rooms" },
+        { value: "Free WiFi" },
+        { value: "Swimming pool access" },
+        { value: "Beach access" },
+      ],
+      tourPlan: [
+        { value: "Day 1: Arrival and beach exploration" },
+        { value: "Day 2: Himchari National Park visit" },
+        { value: "Day 3: Inani Beach and departure" },
+      ],
+      maxGuest: "25",
+      minAge: "5",
       division: "",
       tourType: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-      included: [{ value: "" }],
-      excluded: [{ value: "" }],
-      amenities: [{ value: "" }],
-      tourPlan: [{ value: "" }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: includedFields,
+    append: includedAppend,
+    remove: includedRemove,
+  } = useFieldArray({
     control: form.control,
     name: "included",
   });
@@ -121,8 +176,6 @@ export default function AddTour() {
     control: form.control,
     name: "amenities",
   });
-
-  console.log(fields);
 
   const handleSubmit: SubmitHandler<FieldValues> = async (data) => {
     const tourData = {
@@ -375,13 +428,13 @@ export default function AddTour() {
                     type="button"
                     variant="outline"
                     size="icon"
-                    onClick={() => append({ value: "" })}
+                    onClick={() => includedAppend({ value: "" })}
                   >
                     <Plus />
                   </Button>
                 </div>
                 <div className="space-y-4 mt-4">
-                  {fields.map((item, index) => (
+                  {includedFields.map((item, index) => (
                     <div className="flex  gap-2">
                       <FormField
                         control={form.control}
@@ -398,7 +451,7 @@ export default function AddTour() {
                       />
                       <Button
                         type="button"
-                        onClick={() => remove(index)}
+                        onClick={() => includedRemove(index)}
                         variant="destructive"
                         size="icon"
                       >
