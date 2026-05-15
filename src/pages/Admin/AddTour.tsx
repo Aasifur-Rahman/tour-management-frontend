@@ -40,6 +40,7 @@ import {
   useAddTourMutation,
   useGetTourTypesQuery,
 } from "@/redux/features/Tour/tour.api";
+import type { IErrorResponse } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO } from "date-fns";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
@@ -51,6 +52,7 @@ import {
   type FieldValues,
   type SubmitHandler,
 } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 const formSchema = z.object({
@@ -178,17 +180,37 @@ export default function AddTour() {
   });
 
   const handleSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const toastId = toast.loading("Creating tour....");
+
+    if (images.length === 0) {
+      toast.error("Please add some images", { id: toastId });
+      return;
+    }
+
     const tourData = {
       ...data,
+      costForm: Number(data.costForm),
+      minAge: Number(data.minAge),
+      maxGuest: Number(data.maxGuest),
       startDate: formatISO(data.startDate),
       endDate: formatISO(data.endDate),
-      included: data.included.map((item: { value: string }) => item.value),
-      excluded: data.excluded.map((item: { value: string }) => item.value),
-      amenities: data.amenities.map((item: { value: string }) => item.value),
-      tourPlan: data.tourPlan.map((item: { value: string }) => item.value),
+      included:
+        data.included[0].value === ""
+          ? []
+          : data.included.map((item: { value: string }) => item.value),
+      excluded:
+        data.excluded[0].value === ""
+          ? []
+          : data.excluded.map((item: { value: string }) => item.value),
+      amenities:
+        data.amenities[0].value === ""
+          ? []
+          : data.amenities.map((item: { value: string }) => item.value),
+      tourPlan:
+        data.tourPlan[0].value === ""
+          ? []
+          : data.tourPlan.map((item: { value: string }) => item.value),
     };
-
-    console.log(tourData);
 
     const formData = new FormData();
 
@@ -198,9 +220,18 @@ export default function AddTour() {
 
     try {
       const res = await addTour(formData).unwrap();
-      console.log(res);
+
+      if (res.success) {
+        toast.success("Tour created", { id: toastId });
+        form.reset();
+      } else {
+        toast.error("Something went wrong", { id: toastId });
+      }
     } catch (error) {
       console.error(error);
+      toast.error((error as IErrorResponse).message || "Something went wrong", {
+        id: toastId,
+      });
     }
   };
 
@@ -233,6 +264,52 @@ export default function AddTour() {
                   </FormItem>
                 )}
               />
+
+              <div className="flex gap-5">
+                {/* Location */}
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* departure location */}
+                <FormField
+                  control={form.control}
+                  name="departureLocation"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Departure Location</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* arrival location */}
+                <FormField
+                  control={form.control}
+                  name="arrivalLocation"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Arrival Location</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* Division  */}
               <div className="flex gap-5">
                 <FormField
@@ -302,8 +379,40 @@ export default function AddTour() {
                 />
               </div>
 
+              <div className="flex gap-5">
+                {/* Max guest */}
+                <FormField
+                  control={form.control}
+                  name="maxGuest"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Max Guest</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* Min Age */}
+                <FormField
+                  control={form.control}
+                  name="minAge"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Minimum Age</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* Calendar */}
               <div className="flex gap-5">
+                {/* Start data */}
                 <FormField
                   control={form.control}
                   name="startDate"
@@ -348,6 +457,7 @@ export default function AddTour() {
                     </FormItem>
                   )}
                 />
+                {/* End Date */}
                 <FormField
                   control={form.control}
                   name="endDate"
