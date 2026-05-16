@@ -106,7 +106,6 @@ export default function AddTour() {
       location: "Cox's Bazar",
       costFrom: "15000",
       startDate: new Date(),
-
       // eslint-disable-next-line react-hooks/purity
       endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days later
       departureLocation: "Dhaka",
@@ -172,7 +171,7 @@ export default function AddTour() {
     remove: tourPlanRemove,
   } = useFieldArray({
     control: form.control,
-    name: "amenities",
+    name: "tourPlan",
   });
 
   const handleSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -679,7 +678,7 @@ export default function AddTour() {
                 </div>
                 <div className="space-y-4 mt-4">
                   {tourPlanFields.map((item, index) => (
-                    <div className="flex  gap-2">
+                    <div className="flex gap-2">
                       <FormField
                         control={form.control}
                         key={item.id}
