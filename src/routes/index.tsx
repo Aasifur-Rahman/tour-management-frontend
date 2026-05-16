@@ -41,7 +41,7 @@ const router = createBrowserRouter([
       },
       {
         Component: Booking,
-        path: "booking",
+        path: "booking/:id",
       },
     ],
   },
