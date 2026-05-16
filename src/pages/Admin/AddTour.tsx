@@ -97,11 +97,6 @@ export default function AddTour() {
     }),
   );
 
-  const now = new Date();
-
-  const threeDaysLater = new Date(now);
-  threeDaysLater.setDate(now.getDate() + 3);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -112,7 +107,8 @@ export default function AddTour() {
       costFrom: "15000",
       startDate: new Date(),
 
-      endDate: threeDaysLater, // 3 days later
+      // eslint-disable-next-line react-hooks/purity
+      endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days later
       departureLocation: "Dhaka",
       arrivalLocation: "Cox's Bazar",
       included: [
@@ -189,7 +185,7 @@ export default function AddTour() {
 
     const tourData = {
       ...data,
-      costForm: Number(data.costForm),
+      costFrom: Number(data.costFrom),
       minAge: Number(data.minAge),
       maxGuest: Number(data.maxGuest),
       startDate: formatISO(data.startDate),
@@ -280,6 +276,21 @@ export default function AddTour() {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="costFrom"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Cost</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {/* departure location */}
                 <FormField
                   control={form.control}
