@@ -12,7 +12,6 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -44,6 +43,14 @@ export default function AddTourType() {
       console.log(error);
     }
   };
+
+  const totalPage = data?.meta?.totalPage || 1;
+
+  //! The logic here is
+  //* Total page if 3 => [0,0,0] it will have three elements so
+  //* so we have 2 here so we will generate 2=> [0,0]
+
+  // console.log(Array.from({ length: totalPage }, (index) => index + 1));
 
   return (
     <div className="w-full max-w-7xl mx-auto px-5">
@@ -87,17 +94,34 @@ export default function AddTourType() {
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => setCurrentPage((prev) => prev - 1)}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-40"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
+              {Array.from({ length: totalPage }, (_, index) => index + 1).map(
+                (page) => (
+                  <PaginationItem
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    <PaginationLink isActive={currentPage === page}>
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+
               <PaginationItem>
                 <PaginationNext
                   onClick={() => setCurrentPage((prev) => prev + 1)}
+                  className={
+                    currentPage === totalPage
+                      ? "pointer-events-none opacity-40"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
             </PaginationContent>
