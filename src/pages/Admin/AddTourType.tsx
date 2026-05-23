@@ -87,47 +87,49 @@ export default function AddTourType() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex justify-end mt-6">
-        <div>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
-                  className={
-                    currentPage === 1
-                      ? "pointer-events-none opacity-40"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPage }, (_, index) => index + 1).map(
-                (page) => (
-                  <PaginationItem
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    <PaginationLink isActive={currentPage === page}>
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ),
-              )}
+      {totalPage > 1 && (
+        <div className="flex justify-end mt-6">
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPage }, (_, index) => index + 1).map(
+                  (page) => (
+                    <PaginationItem
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      <PaginationLink isActive={currentPage === page}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )}
 
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
-                  className={
-                    currentPage === totalPage
-                      ? "pointer-events-none opacity-40"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    className={
+                      currentPage === totalPage
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
